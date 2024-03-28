@@ -1,13 +1,6 @@
 from mrjob.job import MRJob
 from mrjob.step import MRStep
 
-def mapper_get_ratings(self, _, line):  
-    try:
-        (userID, movieID, rating, timestamp) = line.split('\t')
-        yield rating, 1
-    except Exception:
-        pass
-
 class CountTagsByMovie(MRJob):
 
     def steps(self):
@@ -21,8 +14,15 @@ class CountTagsByMovie(MRJob):
             # Les colonnes du fichier tags.csv sont généralement séparées par des virgules
             user_id, movie_id, tag, timestamp = line.split(',')
             yield movie_id, 1
-        except Exception:
+        except ValueError:
+            # Cette exception est levée si la ligne n'a pas le bon nombre de valeurs
+            # Ici, vous pouvez choisir de journaliser ou de passer
             pass
+        except Exception as e:
+            # Journaliser les autres types d'erreurs pour révision.
+            # Il est important de noter que l'écriture sur STDERR peut ne pas être capturée par certains environnements d'exécution Hadoop
+            # Alternativement, envisagez d'utiliser un système de journalisation ou de marquer les erreurs d'une manière qui convient à votre environnement.
+            print(f"Erreur inattendue: {e}", file=sys.stderr)
 
     def reducer_count_tags(self, movie_id, counts):
         yield movie_id, sum(counts)
