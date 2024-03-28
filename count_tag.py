@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from mrjob.job import MRJob
 from mrjob.step import MRStep
 
@@ -22,6 +23,7 @@ class CountTagsByMovie(MRJob):
             # Journaliser les autres types d'erreurs pour révision.
             # Il est important de noter que l'écriture sur STDERR peut ne pas être capturée par certains environnements d'exécution Hadoop
             # Alternativement, envisagez d'utiliser un système de journalisation ou de marquer les erreurs d'une manière qui convient à votre environnement.
+            import sys
             print(f"Erreur inattendue: {e}", file=sys.stderr)
 
     def reducer_count_tags(self, movie_id, counts):
