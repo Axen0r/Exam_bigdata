@@ -1,6 +1,13 @@
 from mrjob.job import MRJob
 from mrjob.step import MRStep
 
+def mapper_get_ratings(self, _, line):  
+    try:
+        (userID, movieID, rating, timestamp) = line.split('\t')
+        yield rating, 1
+    except Exception:
+        pass
+
 class CountTagsByMovie(MRJob):
 
     def steps(self):
